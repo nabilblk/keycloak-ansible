@@ -24,3 +24,6 @@ keycloak:
     driver: postgresql
     username: keycloak
     password: keycloak
+  hosts:
+    host_1: keycloak_1_dns
+    host_2: keycloak_2_dns
