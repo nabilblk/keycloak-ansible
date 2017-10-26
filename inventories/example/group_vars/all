@@ -1,0 +1,26 @@
+haproxy:
+  default: atlanta
+  backends:
+    - title: atlanta
+      acls:
+        - hdr_dom(host) -i lb_ip
+      servers:
+        - title: keycloak-1
+          address: keycloak-1_ip:8080
+          stickyID: s1
+        - title: keycloak-2
+          address: keycloak-2_ip:8080
+          stickyID: s2
+
+keycloak:
+  replication:
+    protocol: tcp
+    sessions: 1
+    authenticationSessions: 1
+    offlineSessions: 1
+    loginFailures: 1
+  datasource:
+    connection_url: jdbc:postgresql://database_ip:5432/keycloak
+    driver: postgresql
+    username: keycloak
+    password: keycloak

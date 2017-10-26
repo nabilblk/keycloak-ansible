@@ -1,0 +1,15 @@
+- hosts: keycloak
+  become: yes
+  roles:
+    #- { role: ansible-keycloak}
+    - { role: keycloak}
+
+- hosts: postgresql
+  become: yes
+  roles:
+    - { role: postgresql}
+#
+- hosts: loadbalancer
+  become: yes
+  roles:
+    - { role: haproxy}

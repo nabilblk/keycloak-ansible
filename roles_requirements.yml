@@ -1,0 +1,5 @@
+- name: ansible-keycloak
+  scm: git
+  src: https://github.com/andrewrothstein/ansible-keycloak
+  version: master
+- src: geerlingguy.haproxy

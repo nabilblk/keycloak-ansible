@@ -1,0 +1,15 @@
+[Unit]
+Description=Jboss Application Server
+After=network.target
+
+[Service]
+Type=idle
+Environment=JBOSS_HOME=/usr/local/keycloak/ JBOSS_LOG_DIR=/usr/local/keycloak/standalone/log/ JAVA_HOME=/usr/local/java
+User=ec2-user
+Group=ec2-user
+ExecStart=/usr/local/keycloak/bin/standalone.sh --server-config=standalone-ha.xml -Djboss.node.name={{ node_keycloak_name }} -b 0.0.0.0 -Djgroups.tcpping.initial_hosts=ec2-54-229-245-219.eu-west-1.compute.amazonaws.com[7600],ec2-34-240-4-74.eu-west-1.compute.amazonaws.com[7600] -Djboss.bind.address.private={{ ip_jgroup }}
+TimeoutStartSec=600
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target

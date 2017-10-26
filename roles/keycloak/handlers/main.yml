@@ -1,0 +1,9 @@
+---
+# handlers file for /Users/nabil/projects/trash/keycloak-ansible/keycloak
+- name: reload systemd After KeyCloak
+  listen: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart keycloak
+  listen: reload systemd
+  service: name=keycloak enabled=yes state=restarted

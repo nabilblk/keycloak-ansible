@@ -1,0 +1,47 @@
+---
+- name: Install Postgresql DB
+  package: name={{ item }} state=present
+  with_items:
+  - postgresql
+  - postgresql-server
+  - postgresql-libs
+  - python-psycopg2
+  - postgresql-devel
+
+- name: Initialisation de la base de donnée postgresql
+  command: service postgresql initdb
+            creates=/var/lib/pgsql/data/postgresql.conf
+
+- name: Modifier configurationb PG_HBA.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify: restart postgresql
+
+- name: Autorisation de l'écoute avec des noms de domaine
+  lineinfile:
+    dest: /var/lib/pgsql/data/postgresql.conf
+    regexp: 'listen_addresses = '
+    line: "listen_addresses = '*'"
+    state: present
+
+- name: Start Postgresql
+  service: name=postgresql state=started enabled=yes
+
+- name: create Database keycloak
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: keycloak
+
+- name: Create User keycloak
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: keycloak
+    name: keycloak
+    password: keycloak
+    priv: "ALL"

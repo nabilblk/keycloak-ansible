@@ -1,0 +1,42 @@
+---
+- name: install Keycloak service
+  template:
+    owner: ec2-user
+    group: ec2-user
+    mode: 0644
+    src: keycloak.service.j2
+    dest: /etc/systemd/system/keycloak.service
+  notify: reload systemd
+
+- name: download postgresql jdbc driver
+  get_url:
+    url: https://jdbc.postgresql.org/download/postgresql-42.1.4.jar
+    dest: /usr/local/keycloak-3.2.1.Final/
+    mode: 0644
+    owner: ec2-user
+    group: ec2-user
+
+- name: check if Module com.postgresql file is created
+  stat:
+    path: '/usr/local/keycloak-3.2.1.Final/modules/com/postgresql/main/module.xml'
+  register: postgresqlTest
+
+- name: installation of module
+  become: yes
+  become_user: ec2-user
+  shell: |
+    /usr/local/keycloak-3.2.1.Final/bin/jboss-cli.sh --command="module add --name=com.postgresql --resources=/usr/local/keycloak-3.2.1.Final/postgresql-42.1.4.jar --dependencies=javax.api,javax.transaction.api"
+  tags: postgresql
+  when: postgresqlTest.stat.exists == False
+
+- name: Configure datasource in standalone-ha.xml file
+  template:
+    src: standalone-ha.xml.j2
+    dest: /usr/local/keycloak-3.2.1.Final/standalone/configuration/standalone-ha.xml
+    owner: ec2-user
+    group: ec2-user
+    mode: 0755
+  notify: restart keycloak
+
+- name: keycloak systemd service enable and start
+  service: name=keycloak enabled=yes state=started

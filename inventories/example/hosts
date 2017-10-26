@@ -1,0 +1,11 @@
+[keycloak]
+keycloak_dns_1 node_keycloak_name=keycloak-1 ip_jgroup=keycloak_ip_1
+keycloak_dns_2 node_keycloak_name=keycloak-2 ip_jgroup=keycloak_ip_2
+
+[postgresql]
+database_dns
+
+[loadbalancer]
+lb_dns
+
+[ignore_servers]
